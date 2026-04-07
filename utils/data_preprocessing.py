@@ -24,7 +24,7 @@ def words_to_numbers(df, columns):
     try:
         from word2number import w2n
         for col in columns:
-            df[col] = df[col].apply(lambda x: w2n.word_to_num(x) if isinstance(x, str) else x)
+            df[col] = df[col].apply(lambda x: w2n.word_to_num(x.strip()) if isinstance(x, str) else x)
     except ImportError:
         print("Please install word2number: pip install word2number")
     return df
