@@ -10,7 +10,8 @@ from sklearn.linear_model import LogisticRegression as SklearnSoftmax
 # Project root for utils
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
 from softmax_regression import SoftmaxRegression
-from utils.data_preprocessing import clean_data, train_test_split_custom
+from utils.data_preprocessing import clean_data
+from utils.validation import train_test_split_custom
 
 def run_softmax_exercise():
     current_dir = os.path.dirname(os.path.abspath(__file__))

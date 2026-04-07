@@ -8,7 +8,8 @@ from sklearn.linear_model import LinearRegression as SklearnLR
 # Path setup to root for utils
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
 from linear_regression import LinearRegression
-from utils.data_preprocessing import fix_missing_values, words_to_numbers, clean_data
+from utils.data_preprocessing import fix_missing_values, clean_data
+from utils.encoding import words_to_numbers
 
 def run_hiring_exercise():
     current_dir = os.path.dirname(os.path.abspath(__file__))

@@ -9,7 +9,9 @@ from sklearn.linear_model import LogisticRegression as SklearnLR
 # No sklearn model_selection imports anymore!
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
 from logistic_regression import LogisticRegression
-from utils.data_preprocessing import clean_data, one_hot_encode, train_test_split_custom
+from utils.data_preprocessing import clean_data
+from utils.encoding import one_hot_encode
+from utils.validation import train_test_split_custom
 
 def run_hr_analysis():
     current_dir = os.path.dirname(os.path.abspath(__file__))

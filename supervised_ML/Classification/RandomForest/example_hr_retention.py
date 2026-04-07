@@ -10,7 +10,9 @@ from sklearn.ensemble import RandomForestClassifier as SklearnRF
 # Path setup to root for utils
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
 from random_forest import RandomForest
-from utils.data_preprocessing import clean_data, one_hot_encode, train_test_split_custom
+from utils.data_preprocessing import clean_data
+from utils.encoding import one_hot_encode
+from utils.validation import train_test_split_custom
 
 def run_retention_rf_exercise():
     current_dir = os.path.dirname(os.path.abspath(__file__))

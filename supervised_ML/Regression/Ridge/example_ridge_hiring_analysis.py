@@ -8,7 +8,8 @@ from sklearn.linear_model import Ridge as SklearnRidge
 # Path setup to root for utils
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
 from ridge_regression import RidgeRegression
-from utils.data_preprocessing import fix_missing_values, words_to_numbers, clean_data
+from utils.data_preprocessing import fix_missing_values, clean_data
+from utils.encoding import words_to_numbers
 
 def run_ridge_exercise():
     current_dir = os.path.dirname(os.path.abspath(__file__))

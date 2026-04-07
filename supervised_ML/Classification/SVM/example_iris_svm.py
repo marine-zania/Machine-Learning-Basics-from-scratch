@@ -8,7 +8,8 @@ from sklearn.svm import SVC as SklearnSVM
 # Add project root to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
 from svm import SVM
-from utils.data_preprocessing import clean_data, train_test_split_custom
+from utils.data_preprocessing import clean_data
+from utils.validation import train_test_split_custom
 
 def run_iris_svm():
     # Data is in root data/ iris.csv
