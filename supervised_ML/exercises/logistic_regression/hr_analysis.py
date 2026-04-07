@@ -3,90 +3,53 @@ import sys
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression as SklearnLR
+import seaborn as sns
 
-# Add root directory to path for imports
+# No sklearn model_selection imports anymore!
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
 from supervised_ML.core.classification.logistic_regression import LogisticRegression
-from utils.data_preprocessing import clean_data
+from utils.data_preprocessing import clean_data, one_hot_encode, train_test_split_custom
 
 def run_hr_analysis():
     current_dir = os.path.dirname(os.path.abspath(__file__))
     data_path = os.path.join(current_dir, "../../data/hr.csv")
     
-    # 1. Load Data
-    df = pd.read_csv(data_path)
-    df = clean_data(df)
+    # 1. Load & Encode (Independent)
+    df = clean_data(pd.read_csv(data_path))
     
-    print("--- HR Employee Retention EDA ---")
-    print(f"Data Shape: {df.shape}")
+    # Using our new custom one-hot encoder for Salary instead of pd.get_dummies
+    df_encoded = one_hot_encode(df, ['salary'])
     
-    # Analysis 1: Group by 'left' to see trends
-    retention_stats = df.groupby('left').mean(numeric_only=True)
-    print("\nMean stats for employees who stayed (0) vs left (1):")
-    print(retention_stats)
+    # 2. Feature Selection
+    features = ['satisfaction_level', 'average_montly_hours', 'promotion_last_5years', 
+                'salary_low', 'salary_medium', 'salary_high']
+    X, y = df_encoded[features].values, df_encoded['left'].values
     
-    # 2. Exploratory Data Analysis (EDA) - Visualizations
-    plots_dir = os.path.join(current_dir, "../../plots/logistic_regression")
-    os.makedirs(plots_dir, exist_ok=True)
+    # 3. Split (Independent)
+    # Using our new custom split utility
+    X_train, X_test, y_train, y_test = train_test_split_custom(X, y, test_size=0.2, random_state=42)
     
-    # Plot 1: Impact of Salary on Retention
-    pd.crosstab(df.salary, df.left).plot(kind='bar', figsize=(10, 6))
-    plt.title("Impact of Salary on Retention")
-    plt.xlabel("Salary Level")
-    plt.ylabel("Number of Employees")
-    plt.savefig(os.path.join(plots_dir, "salary_impact.png"))
-    
-    # Plot 2: Correlation between Department and Retention
-    pd.crosstab(df.Department, df.left).plot(kind='bar', figsize=(12, 6))
-    plt.title("Employee Retention per Department")
-    plt.xlabel("Department")
-    plt.ylabel("Number of Employees")
-    plt.xticks(rotation=45)
-    plt.savefig(os.path.join(plots_dir, "department_impact.png"))
-    
-    print(f"\nPlots saved to: {plots_dir}")
-    
-    # 3. Feature Selection
-    subdf = df[['satisfaction_level', 'average_montly_hours', 'promotion_last_5years', 'salary']]
-    
-    # Handle categorical salary (One-Hot Encoding)
-    salary_dummies = pd.get_dummies(subdf.salary, prefix="salary")
-    df_with_dummies = pd.concat([subdf, salary_dummies], axis='columns').drop('salary', axis='columns')
-    
-    X = df_with_dummies
-    y = df.left
-    
-    # Split Data
-    X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8, random_state=42)
-    
-    # 4. Custom Logistic Regression Model
+    # 4. Model (Scaled for stability)
     model = LogisticRegression(learning_rate=0.001, iterations=10000)
-    # Scaling X for gradient descent stability
-    X_train_scaled = X_train / X_train.max()
-    X_test_scaled = X_test / X_train.max()
+    X_train_scaled = X_train / X_train.max(axis=0)
+    X_test_scaled = X_test / X_train.max(axis=0)
     
     model.fit(X_train_scaled, y_train)
     
-    # Measurement
-    def get_accuracy(y_true, y_pred):
-        return np.mean(y_true == y_pred)
+    # 5. Result
+    y_pred = model.predict(X_test_scaled)
+    accuracy = np.mean(y_test == y_pred)
     
-    custom_pred = model.predict(X_test_scaled)
-    custom_acc = get_accuracy(y_test, custom_pred)
+    print("--- HR Retention Independent Analysis (No Sklearn Utilities) ---")
+    print(f"Dataset Split: {len(X_train)} Train, {len(X_test)} Test")
+    print(f"Logistic Regression Accuracy: {accuracy:.4f}")
     
-    print("\n--- Model Performance ---")
-    print(f"Custom Model Accuracy: {custom_acc:.4f}")
-    
-    # 5. Sklearn Verification
-    sk_model = SklearnLR(max_iter=1000)
-    sk_model.fit(X_train, y_train)
-    sk_acc = sk_model.score(X_test, y_test)
-    print(f"Sklearn Model Accuracy: {sk_acc:.4f}")
-    
-    if np.isclose(custom_acc, sk_acc, atol=0.05):
-        print("\n✅ Success! Custom implementation performance matches Sklearn baseline.")
+    # 6. Visualization
+    plt.figure(figsize=(10, 6))
+    pd.crosstab(df.salary, df.left).plot(kind='bar')
+    plt.title("Employee Retention by Salary (Custom Utility Data Check)")
+    plt.savefig(os.path.join(current_dir, "../../plots/logistic_regression/hr_independent_analysis.png"))
+    print("\nVisual Analysis Plot generated.")
 
 if __name__ == "__main__":
     run_hr_analysis()
