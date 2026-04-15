@@ -26,7 +26,7 @@ class KNN:
         y : array-like of shape (n_samples,)
             Target values.
         """
-        self.X_train = np.array(X)
+        self.X_train = np.array(X, dtype=np.float64)
         self.y_train = np.array(y)
 
     def predict(self, X):
@@ -43,11 +43,11 @@ class KNN:
         y_pred : ndarray of shape (n_queries,)
             Class labels for each data sample.
         """
-        X = np.array(X)
-        y_pred = [self._predict(x) for x in X]
+        X = np.array(X, dtype=np.float64)
+        y_pred = [self._predict_single(x) for x in X]
         return np.array(y_pred)
 
-    def _predict(self, x):
+    def _predict_single(self, x):
         # Compute distances between x and all examples in the training set
         distances = [self._euclidean_distance(x, x_train) for x_train in self.X_train]
         

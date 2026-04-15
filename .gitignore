@@ -1,0 +1,30 @@
+# Environment and Installations
+env/
+venv/
+.venv/
+env.bak/
+venv.bak/
+
+# Byte-compiled / optimized Python files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IDE and OS settings
+.vscode/
+.idea/
+.DS_Store
+
+# Distribution / packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
